@@ -1,6 +1,12 @@
+PROJECT := nf-quilt3
+REPORT := ./plugins/$(PROJECT)/build/reports/tests/test/index.html
+BUCKET := quilt-ernest-staging
+PIPELINE := sarek
+QUILT_URI :=  quilt+s3://$(BUCKET)#package=$(PROJECT)/$(PIPELINE)&path=.
+
 verify: compile
 	clear
-	./gradlew check || open ./plugins/nf-quilt3/build/reports/tests/test/index.html
+	./gradlew check || open $(REPORT)
 
 clean:
 	./gradlew clean
@@ -14,9 +20,8 @@ check:
 	./gradlew check
 
 
-sarek: compile
-	./launch.sh run nf-core/sarek -profile test,docker -plugins nf-quilt3 --outdir "quilt+s3://quilt-ernest-staging#package=nf-quilt/sarek&path=."
-
+$(PIPELINE): compile
+	./launch.sh run nf-core/$(PIPELINE) -profile test,docker -plugins $(PROJECT) --outdir "$(QUILT_URI)"
 #
 # Show dependencies try `make deps config=runtime`, `make deps config=google`
 #
